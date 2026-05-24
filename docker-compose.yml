@@ -1,0 +1,37 @@
+services:
+  # Node.js Application Service
+  app:
+    build: .
+    container_name: student-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://admin:password@mongodb:27017/mydatabase?authSource=admin
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  # MongoDB Service
+  db:
+    image: mongo:7.0
+    container_name: mongodb-db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+# Networks to allow containers to talk to each other
+networks:
+  app-network:
+    driver: bridge
+
+# Persistent volume so database data survives restarts
+volumes:
+  mongo-data:
